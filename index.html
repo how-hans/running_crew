@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Running Crew</title>
+<style>
+  :root {
+    color-scheme: light dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f172a;
+    color: #f1f5f9;
+  }
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    margin: 0 0 1rem;
+    background: linear-gradient(90deg, #38bdf8, #22d3ee);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p {
+    font-size: 1.25rem;
+    max-width: 40rem;
+    color: #cbd5e1;
+    margin: 0 0 2rem;
+  }
+  .cta {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    background: #38bdf8;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);
+  }
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+  .feature {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    width: 220px;
+  }
+  .feature h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: #38bdf8;
+  }
+  .feature p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <h1>Running Crew</h1>
+    <p>Find your pace, find your people. Join a local crew of runners who train together, race together, and push each other further.</p>
+    <a class="cta" href="#join">Join the Crew</a>
+
+    <div class="features">
+      <div class="feature">
+        <h3>Group Runs</h3>
+        <p>Weekly meetups for every pace, from easy jogs to speed sessions.</p>
+      </div>
+      <div class="feature">
+        <h3>Accountability</h3>
+        <p>Track goals together and keep each other motivated.</p>
+      </div>
+      <div class="feature">
+        <h3>Community</h3>
+        <p>Meet runners nearby and build lasting friendships.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
