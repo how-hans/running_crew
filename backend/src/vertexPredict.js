@@ -1,4 +1,5 @@
 import aiplatform from '@google-cloud/aiplatform'
+import { resolveClassLabel } from './classLabels.js'
 
 const { PredictionServiceClient } = aiplatform.v1
 const { helpers } = aiplatform
@@ -23,17 +24,6 @@ function clientOptions() {
 
 const client = new PredictionServiceClient(clientOptions())
 
-// Model classes follow the PlantVillage naming convention: "Crop___Disease" (or "Crop___healthy").
-function parseClassLabel(label) {
-  const [cropRaw, ...diseaseParts] = label.split('___')
-  const diseaseRaw = diseaseParts.join('___') || 'healthy'
-  return {
-    crop: cropRaw.replace(/_/g, ' '),
-    disease: diseaseRaw.replace(/_/g, ' '),
-    isHealthy: /healthy/i.test(diseaseRaw),
-  }
-}
-
 // FR-1: send the uploaded leaf photo to the trained Vertex AI endpoint
 // and return the top prediction as { crop, disease, isHealthy, confidence }.
 export async function classifyLeafImage(imageBuffer) {
@@ -41,11 +31,11 @@ export async function classifyLeafImage(imageBuffer) {
     content: imageBuffer.toString('base64'),
   })
   const parametersObj = new params.ImageClassificationPredictionParams({
-    confidenceThreshold: 0.5,
-    maxPredictions: 5,
+    confidenceThreshold: 0,
+    maxPredictions: 38,
   })
 
-  const endpoint = client.endpointPath(PROJECT, LOCATION, ENDPOINT_ID)
+  const endpoint = client.projectLocationEndpointPath(PROJECT, LOCATION, ENDPOINT_ID)
   const [response] = await client.predict({
     endpoint,
     instances: [helpers.toValue(instanceObj.toJSON())],
@@ -57,16 +47,20 @@ export async function classifyLeafImage(imageBuffer) {
     throw new Error('Vertex AI endpoint returned no predictions')
   }
 
-  const result = helpers.fromValue(predictionValue)
-  const topLabel = result.displayNames?.[0]
-  const topConfidence = result.confidences?.[0]
-
-  if (!topLabel || topConfidence === undefined) {
+  const { displayNames, confidences } = helpers.fromValue(predictionValue)
+  if (!displayNames?.length || !confidences?.length) {
     throw new Error('Vertex AI response was missing displayNames/confidences')
   }
 
+  // displayNames/confidences come back in class-index order, not sorted by
+  // confidence, so the top class is whichever index has the highest score.
+  let topIndex = 0
+  for (let i = 1; i < confidences.length; i++) {
+    if (confidences[i] > confidences[topIndex]) topIndex = i
+  }
+
   return {
-    ...parseClassLabel(topLabel),
-    confidence: topConfidence,
+    ...resolveClassLabel(displayNames[topIndex]),
+    confidence: confidences[topIndex],
   }
 }
