@@ -41,9 +41,17 @@ node backend/src/server.js
 2. 이 GitHub 저장소 연결
 3. `render.yaml` 설정이 자동 인식되어 Node 웹 서비스 하나로 배포됨 (Health Check: `/api/health`)
 
+## Vertex AI 연동
+
+`backend/src/vertexPredict.js`가 학습된 Vertex AI 엔드포인트로 이미지를 보내 분류 결과를 받아옵니다.
+
+- 로컬: `gcloud auth application-default login` 한 번이면 별도 키 없이 인증됨
+- Render: 서비스 계정 키 JSON을 `GOOGLE_APPLICATION_CREDENTIALS_JSON` 환경변수에 그대로 붙여넣기
+- 프로젝트/엔드포인트 값은 `backend/.env.example` 참고 (기본값이 이미 설정되어 있음)
+
 ## 진행 상황
 
-- [x] FR-1 이미지 업로드 + 진단 결과 화면 (현재는 mock 데이터)
+- [x] FR-1 이미지 업로드 + 진단 결과 화면 (Vertex AI 엔드포인트 연동, DB 저장까지 완료 — 로컬에서 실제 GCP 인증 후 테스트 필요)
 - [ ] FR-2 LLM 기반 결과 설명
 - [ ] FR-3 맞춤형 방제 추천
 - [ ] FR-4 PLS 안전기준 체크

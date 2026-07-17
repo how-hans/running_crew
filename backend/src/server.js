@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import express from 'express'
 import cors from 'cors'
 import multer from 'multer'
-import { randomMockDiagnosis } from './mockClasses.js'
+import { classifyLeafImage } from './vertexPredict.js'
 import { pool, initDb } from './db.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -22,15 +22,19 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true })
 })
 
-// FR-1: image -> crop/disease classification.
-// Returns mock data for now; the trained InceptionV3 classifier
-// replaces this handler's body once it's ready (Part 5).
+// FR-1: image -> crop/disease classification via the trained Vertex AI endpoint.
 app.post('/api/diagnose', upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: '이미지 파일이 필요해요' })
   }
 
-  const diagnosis = randomMockDiagnosis()
+  let diagnosis
+  try {
+    diagnosis = await classifyLeafImage(req.file.buffer)
+  } catch (err) {
+    console.error('Vertex AI prediction failed:', err)
+    return res.status(502).json({ error: '진단 모델 호출에 실패했어요' })
+  }
 
   const { rows } = await pool.query(
     `INSERT INTO diagnoses (crop, disease, is_healthy, confidence)
